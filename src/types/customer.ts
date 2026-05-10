@@ -3,8 +3,10 @@ export type CustomerStatus = 'active' | 'blocked' | 'vip';
 export type Customer = {
   _id?: string;
   id: string;
-  name: string;
-  email: string;
+  name?: string;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
   phone?: string;
   status?: CustomerStatus;
   isBlocked?: boolean;
