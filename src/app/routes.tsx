@@ -1,4 +1,5 @@
 import { Navigate, RouteObject } from 'react-router-dom';
+import { RequireAuth } from '../auth/RequireAuth';
 import { DashboardLayout } from '../layouts/DashboardLayout';
 import { BrandsPage } from '../pages/brands/BrandsPage';
 import { CategoriesPage } from '../pages/categories/CategoriesPage';
@@ -7,6 +8,7 @@ import { CustomerDetailsPage } from '../pages/customers/CustomerDetailsPage';
 import { CustomersPage } from '../pages/customers/CustomersPage';
 import { DashboardPage } from '../pages/dashboard/DashboardPage';
 import { InventoryPage } from '../pages/inventory/InventoryPage';
+import { LoginPage } from '../pages/login/LoginPage';
 import { OrderDetailsPage } from '../pages/orders/OrderDetailsPage';
 import { OrdersPage } from '../pages/orders/OrdersPage';
 import { ProductFormPage } from '../pages/products/ProductFormPage';
@@ -17,9 +19,14 @@ import { RolesPermissionsPage } from '../pages/users/RolesPermissionsPage';
 import { UsersPage } from '../pages/users/UsersPage';
 
 export const routes: RouteObject[] = [
+  { path: '/login', element: <LoginPage /> },
   {
     path: '/',
-    element: <DashboardLayout />,
+    element: (
+      <RequireAuth>
+        <DashboardLayout />
+      </RequireAuth>
+    ),
     children: [
       { index: true, element: <Navigate to="/dashboard" replace /> },
       { path: 'dashboard', element: <DashboardPage /> },

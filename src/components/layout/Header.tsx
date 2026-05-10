@@ -1,8 +1,18 @@
-import { Bell, Menu } from 'lucide-react';
+import { Bell, LogOut, Menu } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../auth/AuthContext';
 import { SearchInput } from '../ui/SearchInput';
 import { IconButton } from '../ui/IconButton';
 
 export function Header({ onMenuClick }: { onMenuClick: () => void }) {
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
+  function handleLogout() {
+    logout();
+    navigate('/login', { replace: true });
+  }
+
   return (
     <header className="sticky top-0 z-20 flex h-16 items-center justify-between border-b border-border-subtle bg-panel px-4 shadow-sm md:px-8">
       <div className="max-w-xl flex-1">
@@ -21,6 +31,9 @@ export function Header({ onMenuClick }: { onMenuClick: () => void }) {
           <p className="text-xs font-bold uppercase tracking-tight text-white">Be-Fox System</p>
           <p className="font-mono text-[10px] text-gray-500">v1.4.0-PROD</p>
         </div>
+        <IconButton label="Logout" onClick={handleLogout}>
+          <LogOut className="h-4 w-4" />
+        </IconButton>
         <IconButton label="Open menu" className="lg:hidden" onClick={onMenuClick}>
           <Menu className="h-4 w-4" />
         </IconButton>
