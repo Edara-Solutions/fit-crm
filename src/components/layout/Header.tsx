@@ -1,11 +1,14 @@
 import { Bell, LogOut, Menu } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../auth/AuthContext';
+import { roleLabels } from '../../constants/roles';
+import { useAuthStore } from '../../stores/authStore';
 import { SearchInput } from '../ui/SearchInput';
 import { IconButton } from '../ui/IconButton';
 
 export function Header({ onMenuClick }: { onMenuClick: () => void }) {
   const { logout } = useAuth();
+  const user = useAuthStore((state) => state.user);
   const navigate = useNavigate();
 
   function handleLogout() {
@@ -28,8 +31,8 @@ export function Header({ onMenuClick }: { onMenuClick: () => void }) {
           <span className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full border border-panel bg-brand" />
         </IconButton>
         <div className="hidden text-right sm:block">
-          <p className="text-xs font-bold uppercase tracking-tight text-white">Be-Fox System</p>
-          <p className="font-mono text-[10px] text-gray-500">v1.4.0-PROD</p>
+          <p className="text-xs font-bold uppercase tracking-tight text-white">{user?.name || 'Be-Fox System'}</p>
+          <p className="font-mono text-[10px] text-gray-500">{user?.role ? roleLabels[user.role] : 'v1.4.0-PROD'}</p>
         </div>
         <IconButton label="Logout" onClick={handleLogout}>
           <LogOut className="h-4 w-4" />

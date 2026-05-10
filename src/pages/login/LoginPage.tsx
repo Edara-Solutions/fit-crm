@@ -1,7 +1,7 @@
 import { FormEvent, useState } from 'react';
 import { LockKeyhole, LogIn, Mail } from 'lucide-react';
-import { Navigate, useLocation, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../auth/AuthContext';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useAuthStore } from '../../stores/authStore';
 import { Button } from '../../components/ui/Button';
 import { Card, CardContent } from '../../components/ui/Card';
 import { Input } from '../../components/ui/Input';
@@ -13,7 +13,7 @@ type LoginLocationState = {
 };
 
 export function LoginPage() {
-  const { isAuthenticated, login } = useAuth();
+  const { login, loading } = useAuthStore();
   const navigate = useNavigate();
   const location = useLocation();
   const [email, setEmail] = useState('');
@@ -22,20 +22,21 @@ export function LoginPage() {
 
   const from = (location.state as LoginLocationState | null)?.from?.pathname ?? '/dashboard';
 
-  if (isAuthenticated) {
-    return <Navigate to="/dashboard" replace />;
-  }
-
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError('');
 
-    if (login(email, password)) {
-      navigate(from, { replace: true });
+    if (!email.trim() || !password) {
+      setError('Email and password are required.');
       return;
     }
 
-    setError('Invalid email or password.');
+    try {
+      await login({ email, password });
+      navigate(from, { replace: true });
+    } catch (loginError) {
+      setError(loginError instanceof Error ? loginError.message : 'Invalid email or password.');
+    }
   }
 
   return (
@@ -90,7 +91,7 @@ export function LoginPage() {
                     <span className="mb-2 block text-xs font-bold uppercase tracking-widest text-gray-400">Email</span>
                     <div className="relative">
                       <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-600" />
-                      <Input className="pl-10" onChange={(event) => setEmail(event.target.value)} placeholder="admin@admin.com" type="email" value={email} />
+                      <Input className="pl-10" onChange={(event) => setEmail(event.target.value)} placeholder="admin@example.com" type="email" value={email} />
                     </div>
                   </label>
 
@@ -98,20 +99,16 @@ export function LoginPage() {
                     <span className="mb-2 block text-xs font-bold uppercase tracking-widest text-gray-400">Password</span>
                     <div className="relative">
                       <LockKeyhole className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-600" />
-                      <Input className="pl-10" onChange={(event) => setPassword(event.target.value)} placeholder="admin123" type="password" value={password} />
+                      <Input className="pl-10" onChange={(event) => setPassword(event.target.value)} placeholder="password123" type="password" value={password} />
                     </div>
                   </label>
 
                   {error && <p className="border-l-2 border-brand bg-brand/10 px-3 py-2 text-xs font-semibold text-red-200">{error}</p>}
 
-                  <Button className="w-full" icon={<LogIn className="h-4 w-4" />} type="submit">
-                    Login
+                  <Button className="w-full" disabled={loading} icon={<LogIn className="h-4 w-4" />} type="submit">
+                    {loading ? 'Logging in...' : 'Login'}
                   </Button>
                 </form>
-
-                <div className="mt-6 border border-border-subtle bg-bg-deep px-4 py-3 font-mono text-[10px] uppercase tracking-widest text-gray-500">
-                  Demo access: admin@admin.com / admin123
-                </div>
               </CardContent>
             </Card>
           </div>
@@ -120,4 +117,3 @@ export function LoginPage() {
     </main>
   );
 }
-

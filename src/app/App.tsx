@@ -1,5 +1,6 @@
 import { BrowserRouter, useRoutes } from 'react-router-dom';
 import { AuthProvider } from '../auth/AuthContext';
+import { ToastViewport } from '../components/ui/ToastViewport';
 import { routes } from './routes';
 
 function AppRoutes() {
@@ -11,6 +12,7 @@ export default function App() {
     <AuthProvider>
       <BrowserRouter>
         <AppRoutes />
+        <ToastViewport />
       </BrowserRouter>
     </AuthProvider>
   );

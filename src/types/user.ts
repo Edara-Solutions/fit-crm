@@ -1,3 +1,4 @@
+import type { InternalRole } from './auth';
 import type { Status } from './common';
 
 export type UserRole =
@@ -9,11 +10,14 @@ export type UserRole =
   | 'Content Manager';
 
 export type StaffUser = {
+  _id?: string;
   id: string;
   name: string;
   email: string;
-  role: UserRole;
+  role: UserRole | InternalRole;
   status: Status;
+  isActive?: boolean;
   lastLogin: string;
   createdAt: string;
+  updatedAt?: string;
 };

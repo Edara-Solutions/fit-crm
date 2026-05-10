@@ -1,6 +1,10 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import { navigationItems } from '../../constants/navigation';
+import { routePermissions } from '../../constants/permissions';
+import { roleLabels } from '../../constants/roles';
+import { useAuthStore } from '../../stores/authStore';
+import type { InternalRole } from '../../types/auth';
 import { cn } from '../../utils/cn';
 
 type SidebarProps = {
@@ -10,6 +14,10 @@ type SidebarProps = {
 };
 
 export function Sidebar({ isCollapsed, setIsCollapsed, onNavigate }: SidebarProps) {
+  const user = useAuthStore((state) => state.user);
+  const visibleItems = navigationItems.filter((item) => user && (routePermissions[item.permission] as readonly InternalRole[]).includes(user.role));
+  const initials = user?.name?.split(' ').map((part) => part[0]).join('').slice(0, 2).toUpperCase() || 'AU';
+
   return (
     <div className={cn('h-full overflow-visible transition-all duration-300', isCollapsed ? 'w-20' : 'w-64')}>
       <aside className="flex h-full w-full flex-col overflow-y-auto overflow-x-hidden border-r border-border-subtle bg-panel text-[#F5F5F5]">
@@ -23,7 +31,7 @@ export function Sidebar({ isCollapsed, setIsCollapsed, onNavigate }: SidebarProp
         </div>
 
         <nav className="flex-1 space-y-1 px-4 py-4">
-          {navigationItems.map((item) => (
+          {visibleItems.map((item) => (
             <NavLink
               key={item.href}
               to={item.href}
@@ -49,11 +57,11 @@ export function Sidebar({ isCollapsed, setIsCollapsed, onNavigate }: SidebarProp
 
         <div className="overflow-hidden border-t border-border-subtle bg-bg-deep/50 p-4">
           <div className={cn('flex items-center gap-3', isCollapsed ? 'justify-center px-0' : 'px-2')}>
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-border-subtle bg-slate-800 text-[10px] font-bold">AU</div>
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-border-subtle bg-slate-800 text-[10px] font-bold">{initials}</div>
             {!isCollapsed && (
               <div className="min-w-0 overflow-hidden">
-                <p className="truncate text-xs font-semibold">Admin User</p>
-                <p className="truncate text-[10px] uppercase tracking-tighter text-gray-500">Administrator</p>
+                <p className="truncate text-xs font-semibold">{user?.name || 'Admin User'}</p>
+                <p className="truncate text-[10px] uppercase tracking-tighter text-gray-500">{user?.role ? roleLabels[user.role] : 'Administrator'}</p>
               </div>
             )}
           </div>

@@ -1,5 +1,7 @@
 import { Navigate, RouteObject } from 'react-router-dom';
+import { PublicOnlyRoute } from '../auth/PublicOnlyRoute';
 import { RequireAuth } from '../auth/RequireAuth';
+import { RoleProtectedRoute } from '../auth/RoleProtectedRoute';
 import { DashboardLayout } from '../layouts/DashboardLayout';
 import { BrandsPage } from '../pages/brands/BrandsPage';
 import { CategoriesPage } from '../pages/categories/CategoriesPage';
@@ -17,9 +19,10 @@ import { ReportsPage } from '../pages/reports/ReportsPage';
 import { SettingsPage } from '../pages/settings/SettingsPage';
 import { RolesPermissionsPage } from '../pages/users/RolesPermissionsPage';
 import { UsersPage } from '../pages/users/UsersPage';
+import { routePermissions } from '../constants/permissions';
 
 export const routes: RouteObject[] = [
-  { path: '/login', element: <LoginPage /> },
+  { path: '/login', element: <PublicOnlyRoute><LoginPage /></PublicOnlyRoute> },
   {
     path: '/',
     element: (
@@ -29,22 +32,22 @@ export const routes: RouteObject[] = [
     ),
     children: [
       { index: true, element: <Navigate to="/dashboard" replace /> },
-      { path: 'dashboard', element: <DashboardPage /> },
-      { path: 'orders', element: <OrdersPage /> },
-      { path: 'orders/:id', element: <OrderDetailsPage /> },
-      { path: 'products', element: <ProductsPage /> },
-      { path: 'products/new', element: <ProductFormPage /> },
-      { path: 'products/:id/edit', element: <ProductFormPage /> },
-      { path: 'categories', element: <CategoriesPage /> },
-      { path: 'brands', element: <BrandsPage /> },
-      { path: 'customers', element: <CustomersPage /> },
-      { path: 'customers/:id', element: <CustomerDetailsPage /> },
-      { path: 'users', element: <UsersPage /> },
-      { path: 'users/roles-permissions', element: <RolesPermissionsPage /> },
-      { path: 'coupons', element: <CouponsPage /> },
-      { path: 'inventory', element: <InventoryPage /> },
-      { path: 'reports', element: <ReportsPage /> },
-      { path: 'settings', element: <SettingsPage /> },
+      { path: 'dashboard', element: <RoleProtectedRoute roles={routePermissions.dashboard}><DashboardPage /></RoleProtectedRoute> },
+      { path: 'orders', element: <RoleProtectedRoute roles={routePermissions.orders}><OrdersPage /></RoleProtectedRoute> },
+      { path: 'orders/:id', element: <RoleProtectedRoute roles={routePermissions.orders}><OrderDetailsPage /></RoleProtectedRoute> },
+      { path: 'products', element: <RoleProtectedRoute roles={routePermissions.products}><ProductsPage /></RoleProtectedRoute> },
+      { path: 'products/new', element: <RoleProtectedRoute roles={routePermissions.products}><ProductFormPage /></RoleProtectedRoute> },
+      { path: 'products/:id/edit', element: <RoleProtectedRoute roles={routePermissions.products}><ProductFormPage /></RoleProtectedRoute> },
+      { path: 'categories', element: <RoleProtectedRoute roles={routePermissions.categories}><CategoriesPage /></RoleProtectedRoute> },
+      { path: 'brands', element: <RoleProtectedRoute roles={routePermissions.brands}><BrandsPage /></RoleProtectedRoute> },
+      { path: 'customers', element: <RoleProtectedRoute roles={routePermissions.customers}><CustomersPage /></RoleProtectedRoute> },
+      { path: 'customers/:id', element: <RoleProtectedRoute roles={routePermissions.customers}><CustomerDetailsPage /></RoleProtectedRoute> },
+      { path: 'users', element: <RoleProtectedRoute roles={routePermissions.users}><UsersPage /></RoleProtectedRoute> },
+      { path: 'users/roles-permissions', element: <RoleProtectedRoute roles={routePermissions.users}><RolesPermissionsPage /></RoleProtectedRoute> },
+      { path: 'coupons', element: <RoleProtectedRoute roles={routePermissions.coupons}><CouponsPage /></RoleProtectedRoute> },
+      { path: 'inventory', element: <RoleProtectedRoute roles={routePermissions.inventory}><InventoryPage /></RoleProtectedRoute> },
+      { path: 'reports', element: <RoleProtectedRoute roles={routePermissions.reports}><ReportsPage /></RoleProtectedRoute> },
+      { path: 'settings', element: <RoleProtectedRoute roles={routePermissions.settings}><SettingsPage /></RoleProtectedRoute> },
     ],
   },
 ];

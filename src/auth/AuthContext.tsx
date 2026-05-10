@@ -1,41 +1,37 @@
-import { createContext, useContext, useMemo, useState, type ReactNode } from 'react';
-
-const AUTH_STORAGE_KEY = 'befox-authenticated';
-const DEMO_ADMIN = {
-  email: 'admin@admin.com',
-  password: 'admin123',
-};
+import { createContext, useContext, useEffect, useMemo, type ReactNode } from 'react';
+import { AUTH_EVENT } from '../lib/apiClient';
+import { useAuthStore } from '../stores/authStore';
 
 type AuthContextValue = {
   isAuthenticated: boolean;
-  login: (email: string, password: string) => boolean;
+  isBootstrapping: boolean;
+  login: (email: string, password: string) => Promise<void>;
   logout: () => void;
 };
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [isAuthenticated, setIsAuthenticated] = useState(() => localStorage.getItem(AUTH_STORAGE_KEY) === 'true');
+  const { isAuthenticated, isBootstrapping, login, logout, bootstrap } = useAuthStore();
+
+  useEffect(() => {
+    void bootstrap();
+    window.addEventListener(AUTH_EVENT, handleExpired);
+    return () => window.removeEventListener(AUTH_EVENT, handleExpired);
+
+    function handleExpired() {
+      logout('Session expired. Please log in again.');
+    }
+  }, [bootstrap, logout]);
 
   const value = useMemo<AuthContextValue>(
     () => ({
       isAuthenticated,
-      login: (email, password) => {
-        const isValid = email.trim().toLowerCase() === DEMO_ADMIN.email && password === DEMO_ADMIN.password;
-
-        if (isValid) {
-          localStorage.setItem(AUTH_STORAGE_KEY, 'true');
-          setIsAuthenticated(true);
-        }
-
-        return isValid;
-      },
-      logout: () => {
-        localStorage.removeItem(AUTH_STORAGE_KEY);
-        setIsAuthenticated(false);
-      },
+      isBootstrapping,
+      login: (email, password) => login({ email, password }),
+      logout,
     }),
-    [isAuthenticated],
+    [isAuthenticated, isBootstrapping, login, logout],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
@@ -50,4 +46,3 @@ export function useAuth() {
 
   return context;
 }
-

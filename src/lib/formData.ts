@@ -1,0 +1,47 @@
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
+
+type FormValue = string | number | boolean | null | undefined | File | File[] | string[] | number[] | Record<string, unknown>;
+
+export function validateImageFile(file: File) {
+  if (!file.type.startsWith('image/')) {
+    return 'Only image files are allowed.';
+  }
+
+  if (file.size > MAX_IMAGE_SIZE) {
+    return 'Image files must be 5MB or smaller.';
+  }
+
+  return null;
+}
+
+export function buildFormData(payload: Record<string, FormValue>) {
+  const formData = new FormData();
+
+  Object.entries(payload).forEach(([key, value]) => {
+    if (value === undefined || value === null || value === '') return;
+
+    if (Array.isArray(value)) {
+      if (value.every((item) => item instanceof File)) {
+        value.slice(0, key === 'images' ? 8 : value.length).forEach((file) => formData.append(key, file));
+        return;
+      }
+
+      formData.append(key, JSON.stringify(value));
+      return;
+    }
+
+    if (value instanceof File) {
+      formData.append(key, value);
+      return;
+    }
+
+    if (typeof value === 'object') {
+      formData.append(key, JSON.stringify(value));
+      return;
+    }
+
+    formData.append(key, String(value));
+  });
+
+  return formData;
+}

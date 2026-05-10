@@ -1,7 +1,7 @@
 import type { TimelineItem } from './common';
 
-export type OrderStatus = 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
-export type PaymentStatus = 'paid' | 'pending' | 'failed' | 'refunded';
+export type OrderStatus = 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled' | 'pending_payment' | 'payment_submitted' | 'confirmed' | 'refunded' | 'payment_rejected';
+export type PaymentStatus = 'paid' | 'pending' | 'failed' | 'refunded' | 'awaiting_review' | 'rejected';
 export type PaymentMethod = 'cash' | 'card' | 'wallet' | 'bank_transfer';
 
 export type OrderItem = {
@@ -13,22 +13,31 @@ export type OrderItem = {
 };
 
 export type Order = {
+  _id?: string;
   id: string;
-  customerId: string;
-  customerName: string;
-  phone: string;
-  email: string;
-  date: string;
+  orderNumber?: string;
+  customerId?: string;
+  customer?: unknown;
+  customerName?: string;
+  phone?: string;
+  email?: string;
+  date?: string;
+  createdAt?: string;
   items: OrderItem[];
-  subtotal: number;
-  discount: number;
-  shippingFee: number;
+  subtotal?: number;
+  discount?: number;
+  shippingFee?: number;
   total: number;
-  status: OrderStatus;
-  paymentStatus: PaymentStatus;
-  paymentMethod: PaymentMethod;
+  status?: OrderStatus;
+  orderStatus?: OrderStatus;
+  paymentStatus?: PaymentStatus;
+  payment?: unknown;
+  paymentMethod?: PaymentMethod | string;
   couponCode?: string;
-  shippingAddress: string;
-  adminNotes: string;
-  timeline: TimelineItem[];
+  shippingAddress?: string | Record<string, unknown>;
+  adminNotes?: string;
+  timeline?: TimelineItem[];
+  vendor?: unknown;
+  assignedTo?: unknown;
+  assignedBy?: unknown;
 };
