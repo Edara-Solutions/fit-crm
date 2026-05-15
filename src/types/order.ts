@@ -1,7 +1,7 @@
 import type { TimelineItem } from './common';
 
 export type OrderStatus = 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled' | 'pending_payment' | 'payment_submitted' | 'confirmed' | 'refunded' | 'payment_rejected';
-export type PaymentStatus = 'paid' | 'pending' | 'failed' | 'refunded' | 'awaiting_review' | 'rejected';
+export type PaymentStatus = 'paid' | 'partially_paid' | 'pending' | 'failed' | 'refunded' | 'awaiting_review' | 'rejected';
 export type PaymentMethod = 'cash' | 'card' | 'wallet' | 'bank_transfer';
 
 export type OrderItem = {
@@ -27,6 +27,8 @@ export type Order = {
   subtotal?: number;
   discount?: number;
   shippingFee?: number;
+  paid?: number;
+  reminder?: number;
   total: number;
   status?: OrderStatus;
   orderStatus?: OrderStatus;
@@ -35,6 +37,7 @@ export type Order = {
   paymentMethod?: PaymentMethod | string;
   couponCode?: string;
   shippingAddress?: string | Record<string, unknown>;
+  shippingDetails?: string | Record<string, unknown>;
   adminNotes?: string;
   timeline?: TimelineItem[];
   vendor?: unknown;

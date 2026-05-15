@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { getErrorMessage } from '../lib/apiError';
 import { paymentsService } from '../services/paymentsService';
 import { DEFAULT_PAGINATION, type ListQueryParams, type Pagination } from '../types/api';
-import type { Payment } from '../types/payment';
+import type { Payment, PaymentApprovalPayload } from '../types/payment';
 import { useUiStore } from './uiStore';
 
 type PaymentsState = {
@@ -13,7 +13,7 @@ type PaymentsState = {
   error: string | null;
   fetchPayments: (params?: ListQueryParams) => Promise<void>;
   fetchPaymentById: (id: string) => Promise<void>;
-  approvePayment: (id: string) => Promise<void>;
+  approvePayment: (id: string, payload?: PaymentApprovalPayload) => Promise<void>;
   rejectPayment: (id: string, rejectionReason: string) => Promise<void>;
 };
 
@@ -36,8 +36,8 @@ export const usePaymentsStore = create<PaymentsState>((set, get) => ({
     const { payment } = await paymentsService.getPayment(id);
     set({ selectedPayment: payment });
   },
-  approvePayment: async (id) => {
-    const { payment } = await paymentsService.approvePayment(id);
+  approvePayment: async (id, payload) => {
+    const { payment } = await paymentsService.approvePayment(id, payload);
     set({ payments: get().payments.map((item) => (getId(item) === id ? payment : item)), selectedPayment: payment });
     useUiStore.getState().showToast({ type: 'success', message: 'Payment approved.' });
   },

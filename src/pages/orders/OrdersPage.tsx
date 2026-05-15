@@ -21,7 +21,7 @@ import { formatDate } from '../../utils/formatDate';
 
 const columns: TableColumn<Order>[] = [
   { key: 'id', header: 'Order', render: (order) => order.orderNumber || order._id || order.id },
-  { key: 'customerName', header: 'Customer', render: (order) => order.customerName || getNestedName(order.customer) },
+  { key: 'customerName', header: 'Customer', render: (order) => getCustomerName(order.customer, order.customerName) },
   { key: 'date', header: 'Date', render: (order) => formatDate(order.date || order.createdAt || '') },
   { key: 'status', header: 'Status', render: (order) => <OrderStatusBadge status={order.orderStatus || order.status || 'pending_payment'} /> },
   { key: 'paymentStatus', header: 'Payment', render: (order) => <PaymentStatusBadge status={(order.paymentStatus || getPaymentStatus(order.payment)) as PaymentStatus} /> },
@@ -51,7 +51,7 @@ export function OrdersPage() {
       </FilterBar>
       {error && <div className="border border-brand/40 bg-brand/10 p-4 text-sm text-red-100">{error}<Button className="ml-3" variant="secondary" onClick={() => void fetchOrders()}>Retry</Button></div>}
       <Card>
-        {loading ? <div className="p-5"><LoadingSkeleton /></div> : <Table columns={columns} data={visibleOrders} getRowKey={(order) => order._id || order.id} actions={(order) => <Dropdown><div className="flex flex-col gap-1"><Link to={`/orders/${order._id || order.id}`}><Button variant="ghost">Details</Button></Link><Select onChange={(event) => event.target.value && window.confirm('Changing this status may deduct or restore stock. Continue?') && void updateOrderStatus(order._id || order.id, event.target.value)}><option value="">Set status</option>{ORDER_STATUSES.map((status) => <option key={status} value={status}>{status}</option>)}</Select></div></Dropdown>} />}
+        {loading ? <div className="p-5"><LoadingSkeleton /></div> : <Table columns={columns} data={visibleOrders} getRowKey={(order) => order._id || order.id} actions={(order) => <Dropdown><div className="flex flex-col gap-1"><Link to={`/orders/${order._id || order.id}`}><Button variant="primary" className="cursor-pointer">Details</Button></Link></div></Dropdown>} />}
         <Pagination page={pagination.page} totalPages={pagination.pages || 1} onPageChange={(page) => view === 'assigned' ? void fetchMyAssignedOrders({ page, limit: pagination.limit }) : void fetchOrders({ page, limit: pagination.limit })} />
       </Card>
     </PageContainer>
@@ -60,6 +60,15 @@ export function OrdersPage() {
 
 function getNestedName(value: unknown) {
   return typeof value === 'object' && value && 'name' in value ? String((value as { name?: string }).name ?? '-') : '-';
+}
+
+function getCustomerName(customer: unknown, fallback?: string) {
+  if (typeof customer === 'object' && customer) {
+    if ('fullName' in customer && customer.fullName) return String(customer.fullName);
+    return getNestedName(customer);
+  }
+
+  return fallback ?? '-';
 }
 
 function getPaymentStatus(value: unknown) {

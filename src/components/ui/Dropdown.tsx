@@ -6,9 +6,9 @@ export function Dropdown({ children }: { children?: ReactNode }) {
   return (
     <div className="flex items-center justify-end gap-2">
       {children}
-      <IconButton label="Open actions">
+      {/* <IconButton label="Open actions">
         <MoreVertical className="h-4 w-4" />
-      </IconButton>
+      </IconButton> */}
     </div>
   );
 }

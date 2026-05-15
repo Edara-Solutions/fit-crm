@@ -4,6 +4,7 @@ export const ORDER_STATUSES = [
   'confirmed',
   'processing',
   'shipped',
+  'completed',
   'delivered',
   'cancelled',
   'refunded',
@@ -15,4 +16,5 @@ export const ORDER_STATUS_SIDE_EFFECTS: Record<string, string> = {
   cancelled: 'This restores stock if it was previously deducted.',
   refunded: 'This restores stock and marks the payment as refunded.',
   delivered: 'This sets the delivered date.',
+  completed: 'This sets the completed date.',
 };

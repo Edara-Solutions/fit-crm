@@ -7,6 +7,8 @@ import { useAuthStore } from '../../stores/authStore';
 import type { InternalRole } from '../../types/auth';
 import { cn } from '../../utils/cn';
 
+import foxImage from '../../assets/images/fox.png';
+
 type SidebarProps = {
   isCollapsed: boolean;
   setIsCollapsed: (collapsed: boolean) => void;
@@ -22,10 +24,13 @@ export function Sidebar({ isCollapsed, setIsCollapsed, onNavigate }: SidebarProp
     <div className={cn('h-full overflow-visible transition-all duration-300', isCollapsed ? 'w-20' : 'w-64')}>
       <aside className="flex h-full w-full flex-col overflow-y-auto overflow-x-hidden border-r border-border-subtle bg-panel text-[#F5F5F5]">
         <div className={cn('flex min-h-20 items-center p-6', isCollapsed ? 'justify-center' : 'gap-3')}>
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm bg-brand text-xl font-black italic text-white">F</div>
-          {!isCollapsed && (
-            <span className="min-w-0 whitespace-nowrap text-xl font-black italic tracking-tighter text-white underline decoration-brand decoration-4 underline-offset-4">
+          {isCollapsed ? (
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm bg-brand text-xl font-black italic text-white text-xs text-center">
               BE-FOX
+            </div>
+          ) : (
+            <span className="min-w-0 whitespace-nowrap text-xl font-black italic tracking-tighter text-white underline decoration-brand decoration-4 underline-offset-4">
+              <img src={foxImage} alt="BE-FOX" className="w-50 h-30 object-contain" />
             </span>
           )}
         </div>

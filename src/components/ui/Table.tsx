@@ -30,7 +30,7 @@ export function Table<T extends Record<string, unknown>>({ columns, data, getRow
                 {column.header}
               </th>
             ))}
-            {actions && <th className="px-5 py-3" />}
+            {actions && <th className="px-5 py-3 text-[10px] font-bold uppercase tracking-[0.18em] text-gray-500">Actions</th>}
           </tr>
         </thead>
         <tbody className="divide-y divide-border-subtle">

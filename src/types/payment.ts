@@ -1,4 +1,9 @@
-export type BackendPaymentStatus = 'pending' | 'awaiting_review' | 'paid' | 'rejected' | 'failed' | 'refunded';
+export type BackendPaymentStatus = 'pending' | 'awaiting_review' | 'paid' | 'partially_paid' | 'rejected' | 'failed' | 'refunded';
+
+export type PaymentApprovalPayload = {
+  paymentStatus: 'paid' | 'partially_paid';
+  paidAmount?: number;
+};
 
 export type Payment = {
   _id?: string;

@@ -34,7 +34,7 @@ export function DashboardPage() {
       {overview && <DashboardStats overview={overview} />}
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
         <Card className="xl:col-span-2">
-          <CardHeader><div className="flex items-center justify-between gap-3"><CardTitle>Revenue Performance</CardTitle><Select value={period} onChange={(event) => void setPeriod(event.target.value as RevenuePeriod)}><option value="year">Year</option><option value="month">Month</option><option value="week">Week</option></Select></div></CardHeader>
+          <CardHeader><div className="flex items-center justify-between gap-3"><CardTitle>Revenue Performance</CardTitle><Select className="w-24 cursor-pointer" value={period} onChange={(event) => void setPeriod(event.target.value as RevenuePeriod)}><option value="year">Year</option><option value="month">Month</option><option value="week">Week</option></Select></div></CardHeader>
           <CardContent>
             <div className="h-[300px]">
               <ResponsiveContainer width="100%" height="100%">

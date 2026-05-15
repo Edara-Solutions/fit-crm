@@ -16,6 +16,8 @@ import {
 } from 'lucide-react';
 import { cn } from '../utils/cn';
 
+import foxImage from '../assets/images/fox.png'
+
 interface SidebarProps {
   isCollapsed: boolean;
   setIsCollapsed: (collapsed: boolean) => void;
