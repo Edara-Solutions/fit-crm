@@ -22,7 +22,14 @@ export type Order = {
   phone?: string;
   email?: string;
   date?: string;
-  createdAt?: string;
+  createdAt?: string | Date;
+  paidAt?: string | Date;
+  confirmedAt?: string | Date;
+  shippedAt?: string | Date;
+  deliveredAt?: string | Date;
+  completedAt?: string | Date;
+  cancelledAt?: string | Date;
+  refundedAt?: string | Date;
   items: OrderItem[];
   subtotal?: number;
   discount?: number;

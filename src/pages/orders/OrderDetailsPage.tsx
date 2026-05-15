@@ -18,7 +18,7 @@ import { getErrorMessage } from '../../lib/apiError';
 import { paymentsService } from '../../services/paymentsService';
 import { useOrdersStore } from '../../stores/ordersStore';
 import { useUiStore } from '../../stores/uiStore';
-import type { OrderItem, OrderStatus, PaymentStatus } from '../../types/order';
+import type { Order, OrderItem, OrderStatus, PaymentStatus } from '../../types/order';
 import type { PaymentApprovalPayload } from '../../types/payment';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { formatDate } from '../../utils/formatDate';
@@ -61,6 +61,7 @@ export function OrderDetailsPage() {
   const paymentId = getPaymentId(order.payment);
   const paymentProofImage = getPaymentProofImage(order.payment);
   const showApprovePayment = (order.orderStatus || order.status) === 'payment_submitted';
+  const timelineItems = getOrderTimeline(order);
 
   async function handleStatusUpdate() {
     if (!id) return;
@@ -177,7 +178,18 @@ export function OrderDetailsPage() {
               </div>
             </CardContent>
           </Card>
-          <Card><CardHeader><CardTitle>Order Timeline</CardTitle></CardHeader><CardContent className="space-y-4">{(order.timeline ?? []).map((item) => <div key={item.date} className="border-l-2 border-brand pl-3"><p className="text-xs font-bold text-white">{item.label}</p><p className="text-[10px] text-gray-500">{formatDate(item.date)}</p><p className="mt-1 text-xs text-gray-400">{item.description}</p></div>)}</CardContent></Card>
+          <Card>
+            <CardHeader><CardTitle>Order Timeline</CardTitle></CardHeader>
+            <CardContent className="space-y-4">
+              {timelineItems.length > 0 ? timelineItems.map((item) => (
+                <div key={`${item.label}-${String(item.date)}`} className="border-l-2 border-brand pl-3">
+                  <p className="text-xs font-bold text-white">{item.label}</p>
+                  <p className="text-[10px] text-gray-500">{formatDate(item.date)}</p>
+                  <p className="mt-1 text-xs text-gray-400">{item.description}</p>
+                </div>
+              )) : <p className="text-xs text-gray-500">No timeline events yet.</p>}
+            </CardContent>
+          </Card>
         </div>
       </div>
       <Modal open={approvalOpen} title="Approve Payment" onClose={() => setApprovalOpen(false)}>
@@ -254,6 +266,42 @@ function getShippingDetails(value: unknown) {
     },
     notes && { label: 'Notes', value: notes },
   ].filter(Boolean) as Array<{ label: string; value: string }>;
+}
+
+type TimelineDisplayItem = {
+  label: string;
+  date: string | Date;
+  description: string;
+};
+
+const ORDER_TIMELINE_FIELDS: Array<{ key: keyof Order; label: string; description: string }> = [
+  { key: 'createdAt', label: 'Created', description: 'Order was created.' },
+  { key: 'paidAt', label: 'Paid', description: 'Payment was completed.' },
+  { key: 'confirmedAt', label: 'Confirmed', description: 'Order was confirmed.' },
+  { key: 'shippedAt', label: 'Shipped', description: 'Order was handed off for shipping.' },
+  { key: 'deliveredAt', label: 'Delivered', description: 'Order was delivered to the customer.' },
+  { key: 'completedAt', label: 'Completed', description: 'Order was completed.' },
+  { key: 'cancelledAt', label: 'Cancelled', description: 'Order was cancelled.' },
+  { key: 'refundedAt', label: 'Refunded', description: 'Order was refunded.' },
+];
+
+function getOrderTimeline(order: Order): TimelineDisplayItem[] {
+  const lifecycleItems = ORDER_TIMELINE_FIELDS.flatMap(({ key, label, description }) => {
+    const date = order[key];
+    return isDateValue(date) ? [{ label, date, description }] : [];
+  });
+
+  const customItems = (order.timeline ?? []).filter((item) => isDateValue(item.date));
+  const timelineItems = [...lifecycleItems, ...customItems];
+  const uniqueItems = Array.from(new Map(timelineItems.map((item) => [`${item.label}-${new Date(item.date).getTime()}`, item])).values());
+
+  return uniqueItems.sort((first, second) => new Date(first.date).getTime() - new Date(second.date).getTime());
+}
+
+function isDateValue(value: unknown): value is string | Date {
+  if (!(typeof value === 'string' || value instanceof Date)) return false;
+
+  return !Number.isNaN(new Date(value).getTime());
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
