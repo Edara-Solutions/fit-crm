@@ -13,6 +13,7 @@ import { InventoryPage } from '../pages/inventory/InventoryPage';
 import { LoginPage } from '../pages/login/LoginPage';
 import { OrderDetailsPage } from '../pages/orders/OrderDetailsPage';
 import { OrdersPage } from '../pages/orders/OrdersPage';
+import { ProductDetailsPage } from '../pages/products/ProductDetailsPage';
 import { ProductFormPage } from '../pages/products/ProductFormPage';
 import { ProductsPage } from '../pages/products/ProductsPage';
 import { ReportsPage } from '../pages/reports/ReportsPage';
@@ -37,6 +38,7 @@ export const routes: RouteObject[] = [
       { path: 'orders/:id', element: <RoleProtectedRoute roles={routePermissions.orders}><OrderDetailsPage /></RoleProtectedRoute> },
       { path: 'products', element: <RoleProtectedRoute roles={routePermissions.products}><ProductsPage /></RoleProtectedRoute> },
       { path: 'products/new', element: <RoleProtectedRoute roles={routePermissions.products}><ProductFormPage /></RoleProtectedRoute> },
+      { path: 'products/:id', element: <RoleProtectedRoute roles={routePermissions.products}><ProductDetailsPage /></RoleProtectedRoute> },
       { path: 'products/:id/edit', element: <RoleProtectedRoute roles={routePermissions.products}><ProductFormPage /></RoleProtectedRoute> },
       { path: 'categories', element: <RoleProtectedRoute roles={routePermissions.categories}><CategoriesPage /></RoleProtectedRoute> },
       { path: 'brands', element: <RoleProtectedRoute roles={routePermissions.brands}><BrandsPage /></RoleProtectedRoute> },

@@ -19,7 +19,7 @@ export function Header({ onMenuClick }: { onMenuClick: () => void }) {
   return (
     <header className="sticky top-0 z-20 flex h-16 items-center justify-between border-b border-border-subtle bg-panel px-4 shadow-sm md:px-8">
       <div className="max-w-xl flex-1">
-        <SearchInput placeholder="Search inventory, orders, or customers..." />
+        {/* <SearchInput placeholder="Search inventory, orders, or customers..." /> */}
       </div>
       <div className="ml-4 flex items-center gap-3">
         <div className="mr-2 hidden items-center gap-2 text-[10px] font-mono text-gray-500 md:flex">

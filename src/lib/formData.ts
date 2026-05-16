@@ -26,7 +26,7 @@ export function buildFormData(payload: Record<string, FormValue>) {
         return;
       }
 
-      formData.append(key, JSON.stringify(value));
+      value.forEach((item) => formData.append(`${key}[]`, String(item)));
       return;
     }
 
@@ -36,7 +36,10 @@ export function buildFormData(payload: Record<string, FormValue>) {
     }
 
     if (typeof value === 'object') {
-      formData.append(key, JSON.stringify(value));
+      Object.entries(value).forEach(([nestedKey, nestedValue]) => {
+        if (nestedValue === undefined || nestedValue === null || nestedValue === '') return;
+        formData.append(`${key}[${nestedKey}]`, String(nestedValue));
+      });
       return;
     }
 

@@ -3,6 +3,7 @@ export type ProductStatus = 'active' | 'inactive' | 'out_of_stock';
 export type Product = {
   _id?: string;
   id: string;
+  slug?: string;
   name: string;
   shortDescription?: string;
   description: string;
@@ -26,8 +27,8 @@ export type Product = {
   servings?: number;
   ingredients?: string | string[];
   nutritionFacts?: string | Record<string, unknown>;
-  warnings?: string;
-  usageInstructions?: string;
+  warnings?: string[];
+  usageInstructions?: string[];
   expiryDate?: string;
   createdAt?: string;
   updatedAt?: string;

@@ -1,7 +1,10 @@
+import { Link } from 'react-router-dom';
+import { Eye } from 'lucide-react';
 import type { Product } from '../../types/product';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { formatDate } from '../../utils/formatDate';
 import { Badge } from '../ui/Badge';
+import { Button } from '../ui/Button';
 import { Dropdown } from '../ui/Dropdown';
 import { Table, type TableColumn } from '../ui/Table';
 import { StatusBadge } from './StatusBadge';
@@ -31,5 +34,18 @@ const columns: TableColumn<Product>[] = [
 ];
 
 export function ProductTable({ products }: { products: Product[] }) {
-  return <Table columns={columns} data={products} getRowKey={(product) => product._id || product.id} actions={() => <Dropdown />} />;
+  return (
+    <Table
+      columns={columns}
+      data={products}
+      getRowKey={(product) => product._id || product.id}
+      actions={(product) => (
+        <Dropdown>
+          <Link to={`/products/${product.slug || product._id || product.id}`}>
+            <Button variant="secondary" icon={<Eye className="h-4 w-4" />}>Details</Button>
+          </Link>
+        </Dropdown>
+      )}
+    />
+  );
 }

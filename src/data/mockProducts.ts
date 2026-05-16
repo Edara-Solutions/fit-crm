@@ -22,8 +22,8 @@ export const mockProducts: Product[] = [
     servings: 66,
     ingredients: 'Whey protein isolate, cocoa, lecithin, sucralose.',
     nutritionFacts: '25g protein, 2g carbs, 1g fat per serving.',
-    warnings: 'Contains milk and soy.',
-    usageInstructions: 'Mix one scoop with 250ml cold water after training.',
+    warnings: ['Contains milk and soy.'],
+    usageInstructions: ['Mix one scoop with 250ml cold water after training.'],
     expiryDate: '2027-02-20',
   },
   {
@@ -46,8 +46,8 @@ export const mockProducts: Product[] = [
     servings: 60,
     ingredients: 'Creatine monohydrate.',
     nutritionFacts: '5g creatine per serving.',
-    warnings: 'Consult a physician if pregnant or under medical care.',
-    usageInstructions: 'Take 5g daily with water or juice.',
+    warnings: ['Consult a physician if pregnant or under medical care.'],
+    usageInstructions: ['Take 5g daily with water or juice.'],
     expiryDate: '2026-11-15',
   },
   {
@@ -71,8 +71,8 @@ export const mockProducts: Product[] = [
     servings: 30,
     ingredients: 'Caffeine, beta alanine, citrulline malate, flavoring.',
     nutritionFacts: '200mg caffeine per serving.',
-    warnings: 'High caffeine. Not for minors.',
-    usageInstructions: 'Take one scoop 20 minutes before workout.',
+    warnings: ['High caffeine.', 'Not for minors.'],
+    usageInstructions: ['Take one scoop 20 minutes before workout.'],
     expiryDate: '2026-07-01',
   },
   {
@@ -95,8 +95,8 @@ export const mockProducts: Product[] = [
     servings: 120,
     ingredients: 'Fish oil concentrate, gelatin, glycerin.',
     nutritionFacts: 'EPA 180mg, DHA 120mg per capsule.',
-    warnings: 'Contains fish.',
-    usageInstructions: 'Take one capsule with meals.',
+    warnings: ['Contains fish.'],
+    usageInstructions: ['Take one capsule with meals.'],
     expiryDate: '2026-06-10',
   },
 ];
