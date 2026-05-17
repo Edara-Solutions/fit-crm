@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Ca
 import { LoadingSkeleton } from '../../components/ui/LoadingSkeleton';
 import { Textarea } from '../../components/ui/Textarea';
 import { useCustomersStore } from '../../stores/customersStore';
+import type { CustomerAddress } from '../../types/customer';
 import { formatCurrency } from '../../utils/formatCurrency';
 
 export function CustomerDetailsPage() {
@@ -32,10 +33,41 @@ export function CustomerDetailsPage() {
         </div>
         <div className="space-y-6">
           <Card><CardHeader><CardTitle>Profile</CardTitle></CardHeader><CardContent className="space-y-3 text-sm text-gray-300"><StatusBadge status={customer.isBlocked ? 'blocked' : customer.status || 'active'} /><p>{customer.email}</p><p>{customer.phone ?? '-'}</p><p className="text-2xl font-black text-white">{formatCurrency(customer.totalSpent ?? 0)}</p><p className="text-[10px] uppercase text-gray-500">Total spending / {customer.totalOrders ?? 0} orders</p></CardContent></Card>
-          <Card><CardHeader><CardTitle>Addresses</CardTitle></CardHeader><CardContent className="space-y-2">{(customer.addresses ?? []).map((address) => <p key={address} className="rounded bg-white/5 p-3 text-xs text-gray-300">{address}</p>)}</CardContent></Card>
+          <Card><CardHeader><CardTitle>Addresses</CardTitle></CardHeader><CardContent className="space-y-2">{(customer.addresses ?? []).map((address, index) => <div key={getAddressKey(address, index)} className="rounded bg-white/5 p-3 text-xs text-gray-300">{renderAddress(address)}</div>)}</CardContent></Card>
           <Card><CardHeader><CardTitle>Used Coupons</CardTitle></CardHeader><CardContent className="flex flex-wrap gap-2">{(customer.usedCoupons ?? []).map((coupon) => <span key={coupon} className="rounded bg-brand/10 px-2 py-1 font-mono text-xs text-[#E9514B]">{coupon}</span>)}</CardContent></Card>
         </div>
       </div>
     </PageContainer>
   );
+}
+
+function getAddressKey(address: string | CustomerAddress, index: number) {
+  if (typeof address === 'string') return `${address}-${index}`;
+  return address._id || address.id || `${formatAddress(address)}-${index}`;
+}
+
+function renderAddress(address: string | CustomerAddress) {
+  if (typeof address === 'string') return <p>{address}</p>;
+
+  return (
+    <div className="space-y-1">
+      <div className="flex flex-wrap items-center gap-2">
+        {address.fullName && <p className="font-bold text-white">{address.fullName}</p>}
+        {address.isDefault && <span className="rounded bg-brand/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest text-[#E9514B]">Default</span>}
+      </div>
+      <p>{formatAddress(address) || '-'}</p>
+      {address.phone && <p className="text-gray-500">{address.phone}</p>}
+      {address.notes && <p className="text-gray-500">{address.notes}</p>}
+    </div>
+  );
+}
+
+function formatAddress(address: CustomerAddress) {
+  return [
+    address.city,
+    address.area,
+    address.street,
+    address.buildingNumber ? `Building ${address.buildingNumber}` : '',
+    address.apartmentNumber ? `Apartment ${address.apartmentNumber}` : '',
+  ].filter(Boolean).join(', ');
 }

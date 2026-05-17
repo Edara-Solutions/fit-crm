@@ -33,7 +33,7 @@ export const routePermissions = {
   coupons: ['super_admin', 'admin'],
   inventory: ['super_admin', 'admin', 'inventory_manager'],
   reports: ['super_admin', 'admin'],
-  settings: ['super_admin', 'admin', 'inventory_manager', 'order_manager', 'customer_support'],
+  settings: ['super_admin', 'admin', 'inventory_manager', 'customer_support'],
 } as const;
 
 export type PermissionKey = keyof typeof routePermissions;

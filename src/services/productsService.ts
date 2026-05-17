@@ -12,7 +12,7 @@ export type ProductPayload = Partial<Product> & {
 
 export const productsService = {
   listProducts: (params?: ListQueryParams) => apiClient.get<{ products: Product[]; pagination?: Pagination }>('/api/products/admin', params),
-  getProduct: (id: string) => apiClient.get<{ product: Product }>(`/api/products/${id}`),
+  getProduct: (id: string) => apiClient.get<{ product: Product }>(`/api/products/admin/${id}`),
   createProduct: (payload: ProductPayload) => hasImageFiles(payload) ? apiClient.post<{ product: Product }>('/api/products', buildFormData(payload), { isFormData: true }) : apiClient.post<{ product: Product }>('/api/products', payload),
   updateProduct: (id: string, payload: ProductPayload) => hasImageFiles(payload) ? apiClient.patch<{ product: Product }>(`/api/products/${id}`, buildFormData(payload), { isFormData: true }) : apiClient.patch<{ product: Product }>(`/api/products/${id}`, payload),
   updateProductStock: (id: string, stock: number) => apiClient.patch<{ product: Product }>(`/api/products/${id}/stock`, { stock }),
