@@ -1,6 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { useParams } from 'react-router-dom';
-import { CheckCircle2, ExternalLink, Printer } from 'lucide-react';
+import { CheckCircle2, ExternalLink, XCircle } from 'lucide-react';
 import { OrderStatusBadge } from '../../components/crm/OrderStatusBadge';
 import { PaymentStatusBadge } from '../../components/crm/PaymentStatusBadge';
 import { PageContainer } from '../../components/layout/PageContainer';
@@ -38,6 +38,9 @@ export function OrderDetailsPage() {
   const [approvalStatus, setApprovalStatus] = useState<PaymentApprovalPayload['paymentStatus']>('partially_paid');
   const [approvalAmount, setApprovalAmount] = useState('');
   const [approvalSubmitting, setApprovalSubmitting] = useState(false);
+  const [rejectionOpen, setRejectionOpen] = useState(false);
+  const [rejectionReason, setRejectionReason] = useState('');
+  const [rejectionSubmitting, setRejectionSubmitting] = useState(false);
 
   useEffect(() => {
     if (id) void fetchOrderById(id);
@@ -74,6 +77,11 @@ export function OrderDetailsPage() {
     // setApprovalAmount(String(getApprovalDefaultAmount(order)));
     setApprovalAmount(0);
     setApprovalOpen(true);
+  }
+
+  function openRejectionModal() {
+    setRejectionReason('');
+    setRejectionOpen(true);
   }
 
   function handleDownloadProofImage() {
@@ -123,9 +131,37 @@ export function OrderDetailsPage() {
     }
   }
 
+  async function handleRejectPayment(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    if (!paymentId) {
+      showToast({ type: 'error', message: 'Payment id is missing for this order.' });
+      return;
+    }
+
+    const reason = rejectionReason.trim();
+
+    if (!reason) {
+      showToast({ type: 'error', message: 'Enter a rejection reason.' });
+      return;
+    }
+
+    setRejectionSubmitting(true);
+    try {
+      await paymentsService.rejectPayment(paymentId, reason);
+      if (id) await fetchOrderById(id);
+      setRejectionOpen(false);
+      showToast({ type: 'success', message: 'Payment rejected.' });
+    } catch (rejectError) {
+      showToast({ type: 'error', message: getErrorMessage(rejectError, 'Could not reject payment.') });
+    } finally {
+      setRejectionSubmitting(false);
+    }
+  }
+
   return (
     <PageContainer>
-      <SectionHeader title={order.orderNumber || order._id || order.id} eyebrow="Orders / Details" action={<div className="flex flex-wrap items-center gap-2">{showApprovePayment && <Button onClick={openApprovalModal} icon={<CheckCircle2 className="h-4 w-4" />}>approvePayment</Button>}{paymentProofImage && <Button onClick={handleDownloadProofImage} icon={<ExternalLink className="h-4 w-4" />}>Show Invoice</Button>}</div>} />
+      <SectionHeader title={order.orderNumber || order._id || order.id} eyebrow="Orders / Details" action={<div className="flex flex-wrap items-center gap-2">{showApprovePayment && <Button onClick={openApprovalModal} icon={<CheckCircle2 className="h-4 w-4" />}>Approve Payment</Button>}{showApprovePayment && <Button variant="danger" onClick={openRejectionModal} icon={<XCircle className="h-4 w-4" />}>Reject Payment</Button>}{paymentProofImage && <Button onClick={handleDownloadProofImage} icon={<ExternalLink className="h-4 w-4" />}>Show Invoice</Button>}</div>} />
       {error && <div className="border border-brand/40 bg-brand/10 p-4 text-sm text-red-100">{error}</div>}
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
         <div className="space-y-6 xl:col-span-2">
@@ -208,6 +244,18 @@ export function OrderDetailsPage() {
           <div className="flex justify-end gap-2 pt-2">
             <Button variant="secondary" onClick={() => setApprovalOpen(false)} disabled={approvalSubmitting}>Cancel</Button>
             <Button type="submit" disabled={approvalSubmitting || !paymentId}>{approvalSubmitting ? 'Approving...' : 'Approve Payment'}</Button>
+          </div>
+        </form>
+      </Modal>
+      <Modal open={rejectionOpen} title="Reject Payment" onClose={() => setRejectionOpen(false)}>
+        <form className="space-y-4" onSubmit={(event) => void handleRejectPayment(event)}>
+          <label className="block space-y-2">
+            <span className="text-xs font-bold uppercase tracking-widest text-gray-500">Rejection reason</span>
+            <Textarea required value={rejectionReason} onChange={(event) => setRejectionReason(event.target.value)} placeholder="Explain why this payment proof is being rejected." />
+          </label>
+          <div className="flex justify-end gap-2 pt-2">
+            <Button variant="secondary" onClick={() => setRejectionOpen(false)} disabled={rejectionSubmitting}>Cancel</Button>
+            <Button variant="danger" type="submit" disabled={rejectionSubmitting || !paymentId}>{rejectionSubmitting ? 'Rejecting...' : 'Reject Payment'}</Button>
           </div>
         </form>
       </Modal>

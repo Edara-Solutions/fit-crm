@@ -53,7 +53,7 @@ export function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
           </div>
           {!isCollapsed && (
             <span className="min-w-0 text-xl font-black tracking-tighter italic text-white underline decoration-brand decoration-4 underline-offset-4 whitespace-nowrap">
-              BE-FOX
+              FIT
             </span>
           )}
         </div>

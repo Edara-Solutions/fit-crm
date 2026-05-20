@@ -7,6 +7,9 @@ export type DashboardOverview = {
   lowStockAlerts: number;
   activeCoupons: number;
   monthlyRevenue: number;
+  totalShippingFee: number;
+  awaitingReviewOrders: number;
+  monthlyShippingFee: number;
 };
 
 export type RevenuePeriod = 'year' | 'month' | 'week';

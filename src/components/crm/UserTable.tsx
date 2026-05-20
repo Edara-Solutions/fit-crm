@@ -1,3 +1,4 @@
+import { Eye } from 'lucide-react';
 import type { StaffUser } from '../../types/user';
 import { formatDate } from '../../utils/formatDate';
 import { Avatar } from '../ui/Avatar';
@@ -14,6 +15,6 @@ const columns: TableColumn<StaffUser>[] = [
   { key: 'createdAt', header: 'Created', render: (user) => formatDate(user.createdAt) },
 ];
 
-export function UserTable({ users, onDeactivate, onActivate, onDelete, canDelete }: { users: StaffUser[]; onDeactivate?: (id: string) => void; onActivate?: (id: string) => void; onDelete?: (id: string) => void; canDelete?: boolean }) {
-  return <Table columns={columns} data={users} getRowKey={(user) => user.id} actions={(user) => <Dropdown><div className="flex flex-col gap-1">{user.status === 'active' ? <Button variant="ghost" onClick={() => onDeactivate?.(user.id)}>Deactivate</Button> : <Button variant="ghost" onClick={() => onActivate?.(user.id)}>Activate</Button>}{canDelete && <Button variant="danger" onClick={() => onDelete?.(user.id)}>Delete</Button>}</div></Dropdown>} />;
+export function UserTable({ users, onEdit, onDeactivate, onActivate, onDelete, canDelete }: { users: StaffUser[]; onEdit?: (id: string) => void; onDeactivate?: (id: string) => void; onActivate?: (id: string) => void; onDelete?: (id: string) => void; canDelete?: boolean }) {
+  return <Table columns={columns} data={users} getRowKey={(user) => user.id} actions={(user) => <Dropdown><div className="flex flex-col gap-1"><Button variant="secondary" icon={<Eye className="h-4 w-4" />} onClick={() => onEdit?.(user.id)}>Details</Button>{user.status === 'active' ? <Button variant="ghost" onClick={() => onDeactivate?.(user.id)}>Deactivate</Button> : <Button variant="ghost" onClick={() => onActivate?.(user.id)}>Activate</Button>}{canDelete && <Button variant="danger" onClick={() => onDelete?.(user.id)}>Delete</Button>}</div></Dropdown>} />;
 }

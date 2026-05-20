@@ -26,6 +26,7 @@ export type Customer = {
   isBlocked?: boolean;
   totalOrders?: number;
   totalSpent?: number;
+  totalShippingFee?: number;
   lastOrderDate?: string;
   addresses?: Array<string | CustomerAddress>;
   usedCoupons?: string[];

@@ -25,7 +25,7 @@ export const revenueChartData = [
 ];
 
 export const bestSellingProducts = [
-  { name: 'BE-FOX Whey Isolate 2kg', sold: 420, revenue: 1213800 },
+  { name: 'FIT Whey Isolate 2kg', sold: 420, revenue: 1213800 },
   { name: 'Creatine Monohydrate 300g', sold: 318, revenue: 311640 },
   { name: 'C4 Pre Workout Blast', sold: 206, revenue: 327540 },
 ];

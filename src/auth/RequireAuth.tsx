@@ -7,7 +7,7 @@ export function RequireAuth({ children }: { children: ReactNode }) {
   const location = useLocation();
 
   if (isBootstrapping) {
-    return <div className="min-h-screen bg-bg-deep p-8 text-sm text-gray-400">Loading BE-FOX admin...</div>;
+    return <div className="min-h-screen bg-bg-deep p-8 text-sm text-gray-400">Loading FIT admin...</div>;
   }
 
   if (!isAuthenticated) {

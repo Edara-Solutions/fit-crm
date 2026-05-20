@@ -37,7 +37,7 @@ export function DashboardLayout() {
         </main>
         <footer className="flex h-10 items-center justify-between border-t border-border-subtle bg-bg-deep px-4 font-mono text-[10px] tracking-wider text-gray-600 md:px-8">
           <span>NETWORK: STABLE</span>
-          <span>BE-FOX_OS v1.4.0</span>
+          <span>FIT_OS v1.4.0</span>
         </footer>
       </div>
     </div>

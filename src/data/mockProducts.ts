@@ -3,10 +3,10 @@ import type { Product } from '../types/product';
 export const mockProducts: Product[] = [
   {
     id: 'p-1001',
-    name: 'BE-FOX Whey Isolate 2kg',
+    name: 'FIT Whey Isolate 2kg',
     shortDescription: 'Lean protein for daily muscle recovery.',
     description: 'Premium whey isolate with fast absorption and clean flavor profiles.',
-    brand: 'BE-FOX',
+    brand: 'FIT',
     category: 'Protein',
     image: 'https://images.unsplash.com/photo-1593095948071-474c5cc2989d?auto=format&fit=crop&w=300&q=80',
     price: 3200,

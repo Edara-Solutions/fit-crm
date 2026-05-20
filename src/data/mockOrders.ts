@@ -9,7 +9,7 @@ export const mockOrders: Order[] = [
     email: 'omar@example.com',
     date: '2026-05-10',
     items: [
-      { productId: 'p-1001', name: 'BE-FOX Whey Isolate 2kg', sku: 'BFX-WHY-2KG', quantity: 2, price: 2890 },
+      { productId: 'p-1001', name: 'FIT Whey Isolate 2kg', sku: 'BFX-WHY-2KG', quantity: 2, price: 2890 },
       { productId: 'p-1002', name: 'Creatine Monohydrate 300g', sku: 'MST-CRT-300', quantity: 1, price: 980 },
     ],
     subtotal: 6760,

@@ -47,7 +47,7 @@ export function LoginPage() {
           <div className="relative flex h-full flex-col justify-between p-12">
             <div className="flex items-center gap-3">
               <div className="flex h-12 w-12 items-center justify-center rounded-sm bg-brand text-2xl font-black italic text-white">F</div>
-              <span className="text-2xl font-black italic tracking-tighter text-white underline decoration-brand decoration-4 underline-offset-4">BE-FOX</span>
+              <span className="text-2xl font-black italic tracking-tighter text-white underline decoration-brand decoration-4 underline-offset-4">FIT</span>
             </div>
 
             <div className="max-w-2xl">
@@ -56,7 +56,7 @@ export function LoginPage() {
                 Sales, inventory, and customers in one command view.
               </h1>
               <p className="mt-6 max-w-xl text-sm leading-6 text-gray-400">
-                Track supplement orders, monitor low stock, manage customers, and keep the BE-FOX operation moving from a single dashboard.
+                Track supplement orders, monitor low stock, manage customers, and keep the FIT operation moving from a single dashboard.
               </p>
             </div>
 
@@ -75,7 +75,7 @@ export function LoginPage() {
           <div className="w-full max-w-md">
             <div className="mb-8 flex items-center gap-3 lg:hidden">
               <div className="flex h-11 w-11 items-center justify-center rounded-sm bg-brand text-xl font-black italic text-white">F</div>
-              <span className="text-2xl font-black italic tracking-tighter text-white underline decoration-brand decoration-4 underline-offset-4">BE-FOX</span>
+              <span className="text-2xl font-black italic tracking-tighter text-white underline decoration-brand decoration-4 underline-offset-4">FIT</span>
             </div>
 
             <Card>

@@ -7,7 +7,7 @@ import { useAuthStore } from '../../stores/authStore';
 import type { InternalRole } from '../../types/auth';
 import { cn } from '../../utils/cn';
 
-import foxImage from '../../assets/images/fox.png';
+import foxImage from '../../assets/images/logo.png';
 
 type SidebarProps = {
   isCollapsed: boolean;
@@ -26,11 +26,11 @@ export function Sidebar({ isCollapsed, setIsCollapsed, onNavigate }: SidebarProp
         <div className={cn('flex min-h-20 items-center p-6', isCollapsed ? 'justify-center' : 'gap-3')}>
           {isCollapsed ? (
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm bg-brand text-xl font-black italic text-white text-xs text-center">
-              BE-FOX
+              FIT
             </div>
           ) : (
             <span className="min-w-0 whitespace-nowrap text-xl font-black italic tracking-tighter text-white underline decoration-brand decoration-4 underline-offset-4">
-              <img src={foxImage} alt="BE-FOX" className="w-50 h-30 object-contain" />
+              <img src={foxImage} alt="FIT" className="w-50 h-30 object-contain" />
             </span>
           )}
         </div>

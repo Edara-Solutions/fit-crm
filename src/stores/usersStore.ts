@@ -51,11 +51,13 @@ export const useUsersStore = create<UsersState>((set, get) => ({
   },
   activateUser: async (id) => {
     const { user } = await usersService.activateUser(id);
-    set({ users: get().users.map((item) => (getId(item) === id ? user : item)) });
+    set({ users: get().users.map((item) => (getId(item) === id ? user : item)), selectedUser: getId(get().selectedUser ?? {}) === id ? user : get().selectedUser });
+    useUiStore.getState().showToast({ type: 'success', message: 'User activated.' });
   },
   deactivateUser: async (id) => {
     const { user } = await usersService.deactivateUser(id);
-    set({ users: get().users.map((item) => (getId(item) === id ? user : item)) });
+    set({ users: get().users.map((item) => (getId(item) === id ? user : item)), selectedUser: getId(get().selectedUser ?? {}) === id ? user : get().selectedUser });
+    useUiStore.getState().showToast({ type: 'success', message: 'User deactivated.' });
   },
   deleteUser: async (id) => {
     await usersService.deleteUser(id);
@@ -64,6 +66,6 @@ export const useUsersStore = create<UsersState>((set, get) => ({
   },
 }));
 
-function getId(user: AuthUser) {
+function getId(user: Pick<AuthUser, '_id' | 'id'>) {
   return user._id || user.id || '';
 }
