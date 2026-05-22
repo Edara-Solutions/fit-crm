@@ -14,6 +14,7 @@ type CouponsState = {
   error: string | null;
   fetchCoupons: (params?: ListQueryParams) => Promise<void>;
   fetchMyCoupons: (params?: ListQueryParams) => Promise<void>;
+  fetchCouponById: (id: string) => Promise<void>;
   createCoupon: (payload: CouponPayload) => Promise<void>;
   updateCoupon: (id: string, payload: CouponPayload) => Promise<void>;
   deleteCoupon: (id: string) => Promise<void>;
@@ -40,6 +41,15 @@ export const useCouponsStore = create<CouponsState>((set, get) => ({
     try {
       const { coupons, pagination } = await couponsService.listMyCoupons(params);
       set({ coupons, pagination, loading: false });
+    } catch (error) {
+      set({ error: getErrorMessage(error), loading: false });
+    }
+  },
+  fetchCouponById: async (id) => {
+    set({ loading: true, error: null });
+    try {
+      const { coupon } = await couponsService.getCoupon(id);
+      set({ selectedCoupon: coupon, loading: false });
     } catch (error) {
       set({ error: getErrorMessage(error), loading: false });
     }

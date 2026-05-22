@@ -10,6 +10,7 @@ export type CouponPayload = Partial<Coupon> & {
   vendor?: string | null;
   applicableCategories?: string[];
   applicableProducts?: string[];
+  applicableCustomers?: string[];
 };
 
 function normalizeCoupon(payload: CouponPayload) {

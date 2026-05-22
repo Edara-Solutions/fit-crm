@@ -23,4 +23,5 @@ export type Coupon = {
   vendor?: string | null;
   applicableCategories?: string[];
   applicableProducts?: string[];
+  applicableCustomers?: string[];
 };

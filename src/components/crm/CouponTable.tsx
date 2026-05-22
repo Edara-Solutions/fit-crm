@@ -1,6 +1,8 @@
+import { Eye, Trash2 } from 'lucide-react';
 import type { Coupon } from '../../types/coupon';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { formatDate } from '../../utils/formatDate';
+import { Button } from '../ui/Button';
 import { Dropdown } from '../ui/Dropdown';
 import { Table, type TableColumn } from '../ui/Table';
 import { StatusBadge } from './StatusBadge';
@@ -17,6 +19,16 @@ const columns: TableColumn<Coupon>[] = [
   { key: 'status', header: 'Status', render: (coupon) => <StatusBadge status={coupon.status || (coupon.isActive === false ? 'inactive' : 'active')} /> },
 ];
 
-export function CouponTable({ coupons }: { coupons: Coupon[] }) {
-  return <Table columns={columns} data={coupons} getRowKey={(coupon) => coupon._id || coupon.id} actions={() => <Dropdown />} />;
+export function CouponTable({ coupons, onEdit, onDelete }: { coupons: Coupon[]; onEdit?: (id: string) => void; onDelete?: (id: string) => void }) {
+  return <Table columns={columns} data={coupons} getRowKey={(coupon) => coupon._id || coupon.id} actions={(coupon) => {
+    const couponId = coupon._id || coupon.id;
+    return (
+      <Dropdown>
+        <div className="flex flex-col gap-1">
+          <Button variant="secondary" icon={<Eye className="h-4 w-4" />} onClick={() => onEdit?.(couponId)}>Details</Button>
+          <Button variant="danger" icon={<Trash2 className="h-4 w-4" />} onClick={() => onDelete?.(couponId)}>Delete</Button>
+        </div>
+      </Dropdown>
+    );
+  }} />;
 }
