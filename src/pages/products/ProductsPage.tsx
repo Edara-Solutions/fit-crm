@@ -48,8 +48,8 @@ export function ProductsPage() {
   }), [brandFilter, categoryFilter, flavorFilter, maxPrice, minPrice, pagination.limit, search, sort, stackFilter, visibilityFilter]);
 
   useEffect(() => {
-    void fetchBrands();
-    void fetchCategories();
+    void fetchBrands({ page: 1, limit: 100 });
+    void fetchCategories({ page: 1, limit: 100 });
   }, [fetchBrands, fetchCategories]);
 
   useEffect(() => {
