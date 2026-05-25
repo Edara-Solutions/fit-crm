@@ -116,8 +116,8 @@ export function ProductFormPage() {
   });
 
   useEffect(() => {
-    void fetchBrands();
-    void fetchCategories();
+    void fetchBrands({ page: 1, limit: 100 });
+    void fetchCategories({ page: 1, limit: 100 });
     if (id) void fetchProductById(id);
   }, [fetchBrands, fetchCategories, fetchProductById, id]);
 
