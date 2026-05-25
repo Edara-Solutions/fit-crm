@@ -27,6 +27,7 @@ const columns: TableColumn<Product>[] = [
   { key: 'category', header: 'Category', render: (product) => typeof product.category === 'string' ? product.category : product.category?.name || '-' },
   { key: 'price', header: 'Price', render: (product) => formatCurrency(product.price) },
   { key: 'discountPrice', header: 'Discount', render: (product) => product.discountPrice ? formatCurrency(product.discountPrice) : '-' },
+  { key: 'revenue', header: 'Revenue', render: (product) => product.revenue === undefined ? '-' : formatCurrency(product.revenue) },
   { key: 'stock', header: 'Stock', render: (product) => <span className="font-mono">{product.stock}</span> },
   { key: 'status', header: 'Status', render: (product) => <StatusBadge status={product.status || (product.stock === 0 ? 'out_of_stock' : product.isActive === false ? 'inactive' : 'active')} /> },
   { key: 'featured', header: 'Featured', render: (product) => product.featured || product.isFeatured ? <Badge tone="red">Featured</Badge> : <Badge>Standard</Badge> },

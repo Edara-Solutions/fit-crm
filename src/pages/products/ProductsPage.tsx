@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Grid2X2, List, Plus, RotateCcw } from 'lucide-react';
+import { Plus, RotateCcw } from 'lucide-react';
 import { FilterBar } from '../../components/crm/FilterBar';
 import { ProductCard } from '../../components/crm/ProductCard';
 import { ProductTable } from '../../components/crm/ProductTable';
@@ -8,10 +8,9 @@ import { PageContainer } from '../../components/layout/PageContainer';
 import { SectionHeader } from '../../components/layout/SectionHeader';
 import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
-import { IconButton } from '../../components/ui/IconButton';
+import { Input } from '../../components/ui/Input';
 import { Pagination } from '../../components/ui/Pagination';
 import { Select } from '../../components/ui/Select';
-import { Tabs } from '../../components/ui/Tabs';
 import { LoadingSkeleton } from '../../components/ui/LoadingSkeleton';
 import { useBrandsStore } from '../../stores/brandsStore';
 import { useCategoriesStore } from '../../stores/categoriesStore';
@@ -25,9 +24,13 @@ export function ProductsPage() {
   const [search, setSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
   const [brandFilter, setBrandFilter] = useState('');
-  const [stockStatusFilter, setStockStatusFilter] = useState('');
+  const [flavorFilter, setFlavorFilter] = useState('');
   const [visibilityFilter, setVisibilityFilter] = useState('');
-  const hasFilters = Boolean(search.trim() || categoryFilter || brandFilter || stockStatusFilter || visibilityFilter);
+  const [stackFilter, setStackFilter] = useState('');
+  const [minPrice, setMinPrice] = useState('');
+  const [maxPrice, setMaxPrice] = useState('');
+  const [sort, setSort] = useState('-createdAt');
+  const hasFilters = Boolean(search.trim() || categoryFilter || brandFilter || flavorFilter || visibilityFilter || stackFilter || minPrice || maxPrice || sort !== '-createdAt');
 
   const getQueryParams = useCallback((page = 1): ListQueryParams => ({
     page,
@@ -35,10 +38,14 @@ export function ProductsPage() {
     search: search.trim() || undefined,
     category: categoryFilter || undefined,
     brand: brandFilter || undefined,
-    stockStatus: stockStatusFilter || undefined,
+    flavor: flavorFilter.trim() || undefined,
     isActive: visibilityFilter === 'active' ? true : visibilityFilter === 'inactive' ? false : undefined,
     isFeatured: visibilityFilter === 'featured' ? true : undefined,
-  }), [brandFilter, categoryFilter, pagination.limit, search, stockStatusFilter, visibilityFilter]);
+    isStack: stackFilter === 'stack' ? true : stackFilter === 'single' ? false : undefined,
+    minPrice: minPrice ? Number(minPrice) : undefined,
+    maxPrice: maxPrice ? Number(maxPrice) : undefined,
+    sort,
+  }), [brandFilter, categoryFilter, flavorFilter, maxPrice, minPrice, pagination.limit, search, sort, stackFilter, visibilityFilter]);
 
   useEffect(() => {
     void fetchBrands();
@@ -57,8 +64,12 @@ export function ProductsPage() {
     setSearch('');
     setCategoryFilter('');
     setBrandFilter('');
-    setStockStatusFilter('');
+    setFlavorFilter('');
     setVisibilityFilter('');
+    setStackFilter('');
+    setMinPrice('');
+    setMaxPrice('');
+    setSort('-createdAt');
   }
 
   return (
@@ -73,17 +84,27 @@ export function ProductsPage() {
           <option value="">All brands</option>
           {brands.map((item) => <option key={item._id || item.id} value={item._id || item.id}>{item.name}</option>)}
         </Select>
-        {/* <Select aria-label="Stock status" value={stockStatusFilter} onChange={(event) => setStockStatusFilter(event.target.value)}>
-          <option value="">All stock statuses</option>
-          <option value="in_stock">In stock</option>
-          <option value="low_stock">Low stock</option>
-          <option value="out_of_stock">Out of stock</option>
-        </Select> */}
+        <Input aria-label="Flavor" placeholder="Flavor" value={flavorFilter} onChange={(event) => setFlavorFilter(event.target.value)} />
         <Select aria-label="Visibility" value={visibilityFilter} onChange={(event) => setVisibilityFilter(event.target.value)}>
           <option value="">All visibility</option>
           <option value="active">Active</option>
           <option value="inactive">Inactive</option>
           <option value="featured">Featured</option>
+        </Select>
+        <Select aria-label="Stack type" value={stackFilter} onChange={(event) => setStackFilter(event.target.value)}>
+          <option value="">All product types</option>
+          <option value="single">Single products</option>
+          <option value="stack">Stacks</option>
+        </Select>
+        <Input aria-label="Minimum price" placeholder="Min price" inputMode="decimal" value={minPrice} onChange={(event) => setMinPrice(event.target.value)} />
+        <Input aria-label="Maximum price" placeholder="Max price" inputMode="decimal" value={maxPrice} onChange={(event) => setMaxPrice(event.target.value)} />
+        <Select aria-label="Sort products" value={sort} onChange={(event) => setSort(event.target.value)}>
+          <option value="-createdAt">Newest</option>
+          <option value="createdAt">Oldest</option>
+          <option value="price">Price low to high</option>
+          <option value="-price">Price high to low</option>
+          <option value="-revenue">Revenue high to low</option>
+          <option value="name">Name A-Z</option>
         </Select>
         <Button variant="secondary" icon={<RotateCcw className="h-4 w-4" />} disabled={!hasFilters} onClick={clearFilters}>Reset</Button>
       </FilterBar>

@@ -97,6 +97,15 @@ export function ProductDetailsPage() {
             <CardContent className="space-y-3 text-xs">
               <InfoRow label="Price" value={formatCurrency(product.price ?? 0)} strong />
               <InfoRow label="Discount Price" value={product.discountPrice ? formatCurrency(product.discountPrice) : '-'} />
+              <InfoRow label="Revenue" value={product.revenue === undefined ? '-' : formatCurrency(product.revenue)} />
+              <div className="border-t border-border-subtle pt-3">
+                <p className="mb-2 text-[10px] font-bold uppercase tracking-widest text-gray-500">Original Price History</p>
+                {product.originalPriceHistory?.length ? product.originalPriceHistory.map((item, index) => (
+                  <div key={`${item.price}-${item.date || item.createdAt || index}`}>
+                    <InfoRow label={item.date || item.createdAt ? formatDate(item.date || item.createdAt || '') : `Entry ${index + 1}`} value={`${formatCurrency(item.price)}${item.note ? ` - ${item.note}` : ''}`} />
+                  </div>
+                )) : <p className="text-xs text-gray-500">No original price history.</p>}
+              </div>
             </CardContent>
           </Card>
 

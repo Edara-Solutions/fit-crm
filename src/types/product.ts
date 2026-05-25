@@ -1,5 +1,13 @@
 export type ProductStatus = 'active' | 'inactive' | 'out_of_stock';
 
+export type ProductOriginalPriceHistory = {
+  price: number;
+  note?: string;
+  date?: string;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
 export type Product = {
   _id?: string;
   id: string;
@@ -13,6 +21,8 @@ export type Product = {
   images?: string[];
   price: number;
   discountPrice?: number;
+  revenue?: number;
+  originalPriceHistory?: ProductOriginalPriceHistory[];
   stock: number;
   sku: string;
   status?: ProductStatus;

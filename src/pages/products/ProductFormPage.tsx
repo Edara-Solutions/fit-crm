@@ -19,6 +19,12 @@ type NutritionFactRow = {
   value: string;
 };
 
+type OriginalPriceHistoryRow = {
+  price: string;
+  note: string;
+  date: string;
+};
+
 function Field({ label, children }: { label: string; children: ReactNode }) {
   return <label className="space-y-2 text-[10px] font-bold uppercase tracking-widest text-gray-500"><span>{label}</span>{children}</label>;
 }
@@ -92,6 +98,7 @@ export function ProductFormPage() {
     category: '',
     price: '',
     discountPrice: '',
+    originalPriceHistory: [] as OriginalPriceHistoryRow[],
     stock: '',
     sku: '',
     flavors: [] as string[],
@@ -105,6 +112,7 @@ export function ProductFormPage() {
     expiryDate: '',
     isActive: true,
     isFeatured: false,
+    isStack: false,
   });
 
   useEffect(() => {
@@ -124,6 +132,7 @@ export function ProductFormPage() {
       category: typeof selectedProduct.category === 'string' ? selectedProduct.category : selectedProduct.category?._id || selectedProduct.category?.id || '',
       price: String(selectedProduct.price ?? ''),
       discountPrice: String(selectedProduct.discountPrice ?? ''),
+      originalPriceHistory: normalizeOriginalPriceHistory(selectedProduct.originalPriceHistory),
       stock: String(selectedProduct.stock ?? ''),
       sku: selectedProduct.sku ?? '',
       flavors: Array.isArray(selectedProduct.flavors) ? selectedProduct.flavors : [],
@@ -137,6 +146,7 @@ export function ProductFormPage() {
       expiryDate: selectedProduct.expiryDate?.slice(0, 10) ?? '',
       isActive: selectedProduct.isActive !== false,
       isFeatured: Boolean(selectedProduct.isFeatured || selectedProduct.featured),
+      isStack: Boolean(selectedProduct.isStack),
     }));
   }, [id, selectedProduct]);
 
@@ -158,6 +168,7 @@ export function ProductFormPage() {
       ...form,
       price: Number(form.price),
       discountPrice: form.discountPrice ? Number(form.discountPrice) : undefined,
+      originalPriceHistory: buildOriginalPriceHistory(form.originalPriceHistory),
       stock: form.stock ? Number(form.stock) : undefined,
       servings: form.servings ? Number(form.servings) : undefined,
       flavors: form.flavors,
@@ -220,6 +231,21 @@ export function ProductFormPage() {
     setForm((current) => ({ ...current, nutritionFacts: current.nutritionFacts.filter((_, itemIndex) => itemIndex !== index) }));
   }
 
+  function addOriginalPrice() {
+    setForm((current) => ({ ...current, originalPriceHistory: [...current.originalPriceHistory, { price: '', note: 'update original price', date: '' }] }));
+  }
+
+  function updateOriginalPrice(index: number, field: keyof OriginalPriceHistoryRow, value: string) {
+    setForm((current) => ({
+      ...current,
+      originalPriceHistory: current.originalPriceHistory.map((item, itemIndex) => itemIndex === index ? { ...item, [field]: value } : item),
+    }));
+  }
+
+  function removeOriginalPrice(index: number) {
+    setForm((current) => ({ ...current, originalPriceHistory: current.originalPriceHistory.filter((_, itemIndex) => itemIndex !== index) }));
+  }
+
   return (
     <PageContainer>
       <form onSubmit={handleSubmit}>
@@ -228,13 +254,13 @@ export function ProductFormPage() {
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
         <div className="space-y-6 xl:col-span-2">
           <Card><CardHeader><CardTitle>Basic Information</CardTitle></CardHeader><CardContent className="grid gap-4 md:grid-cols-2"><Field label="Name"><Input value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} /></Field><Field label="Short description"><Input value={form.shortDescription} onChange={(event) => setForm({ ...form, shortDescription: event.target.value })} /></Field><Field label="Description"><Textarea className="md:col-span-2" value={form.description} onChange={(event) => setForm({ ...form, description: event.target.value })} /></Field><Field label="Brand"><Select value={form.brand} onChange={(event) => setForm({ ...form, brand: event.target.value })}><option value="">Select brand</option>{brands.map((brand) => <option key={brand._id || brand.id} value={brand._id || brand.id}>{brand.name}</option>)}</Select></Field><Field label="Category"><Select value={form.category} onChange={(event) => setForm({ ...form, category: event.target.value })}><option value="">Select category</option>{categories.map((category) => <option key={category._id || category.id} value={category._id || category.id}>{category.name}</option>)}</Select></Field></CardContent></Card>
-          <Card><CardHeader><CardTitle>Supplement Details</CardTitle></CardHeader><CardContent className="grid gap-4 md:grid-cols-2"><Field label="Flavors"><div className="space-y-3"><div className="flex gap-2"><Input placeholder="Chocolate" value={flavorInput} onChange={(event) => setFlavorInput(event.target.value)} onKeyDown={(event) => { if (event.key === 'Enter') { event.preventDefault(); addFlavor(); } }} /><Button variant="secondary" icon={<Plus className="h-4 w-4" />} onClick={addFlavor}>Add</Button></div><div className="flex min-h-8 flex-wrap gap-2">{form.flavors.length > 0 ? form.flavors.map((flavor) => <span key={flavor} className="inline-flex items-center gap-2 rounded-sm border border-border-subtle bg-white/5 px-2 py-1 text-xs font-semibold text-gray-300">{flavor}<button type="button" className="text-gray-500 transition-colors hover:text-white" aria-label={`Remove ${flavor}`} onClick={() => removeFlavor(flavor)}><X className="h-3 w-3" /></button></span>) : <span className="text-xs text-gray-500">No flavors added.</span>}</div></div></Field><Field label="Size"><Input placeholder="2kg" value={form.size} onChange={(event) => setForm({ ...form, size: event.target.value })} /></Field><Field label="Weight"><Input value={form.weight} onChange={(event) => setForm({ ...form, weight: event.target.value })} /></Field><Field label="Servings"><Input type="number" value={form.servings} onChange={(event) => setForm({ ...form, servings: event.target.value })} /></Field><Field label="Ingredients"><Textarea value={form.ingredients} onChange={(event) => setForm({ ...form, ingredients: event.target.value })} /></Field><div className="space-y-2 md:col-span-2"><div className="flex items-center justify-between gap-3"><span className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Nutrition facts</span><Button variant="secondary" icon={<Plus className="h-4 w-4" />} onClick={addNutritionFact}>Add Fact</Button></div><div className="space-y-2">{form.nutritionFacts.length > 0 ? form.nutritionFacts.map((fact, index) => <div key={index} className="grid gap-2 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto]"><Input placeholder="Protein" value={fact.key} onChange={(event) => updateNutritionFact(index, 'key', event.target.value)} /><Input placeholder="25g" value={fact.value} onChange={(event) => updateNutritionFact(index, 'value', event.target.value)} /><Button variant="secondary" icon={<X className="h-4 w-4" />} onClick={() => removeNutritionFact(index)}>Delete</Button></div>) : <p className="text-xs text-gray-500">No nutrition facts added.</p>}</div></div><StringListEditor title="Warnings" placeholder="Contains milk and soy" inputValue={warningInput} items={form.warnings} emptyText="No warnings added." onInputChange={setWarningInput} onAdd={() => addStringItem('warnings', warningInput, () => setWarningInput(''))} onRemove={(item) => removeStringItem('warnings', item)} /><StringListEditor title="Usage instructions" placeholder="Mix one scoop with water" inputValue={usageInstructionInput} items={form.usageInstructions} emptyText="No usage instructions added." onInputChange={setUsageInstructionInput} onAdd={() => addStringItem('usageInstructions', usageInstructionInput, () => setUsageInstructionInput(''))} onRemove={(item) => removeStringItem('usageInstructions', item)} /></CardContent></Card>
+          <Card><CardHeader><CardTitle>Supplement Details</CardTitle></CardHeader><CardContent className="grid gap-4 md:grid-cols-2"><Field label="Flavors"><div className="space-y-3"><div className="flex gap-2"><Input placeholder="Chocolate" value={flavorInput} onChange={(event) => setFlavorInput(event.target.value)} onKeyDown={(event) => { if (event.key === 'Enter') { event.preventDefault(); addFlavor(); } }} /><Button variant="secondary" icon={<Plus className="h-4 w-4" />} onClick={addFlavor}>Add</Button></div><div className="flex min-h-8 flex-wrap gap-2">{form.flavors.length > 0 ? form.flavors.map((flavor) => <span key={flavor} className="inline-flex items-center gap-2 rounded-sm border border-border-subtle bg-white/5 px-2 py-1 text-xs font-semibold text-gray-300">{flavor}<button type="button" className="text-gray-500 transition-colors hover:text-white" aria-label={`Remove ${flavor}`} onClick={() => removeFlavor(flavor)}><X className="h-3 w-3" /></button></span>) : <span className="text-xs text-gray-500">No flavors added.</span>}</div></div></Field><Field label="Size"><Input placeholder="2kg" value={form.size} onChange={(event) => setForm({ ...form, size: event.target.value })} /></Field><Field label="Weight"><Input value={form.weight} onChange={(event) => setForm({ ...form, weight: event.target.value })} /></Field><Field label="Servings"><Input inputMode="numeric" value={form.servings} onChange={(event) => setForm({ ...form, servings: event.target.value })} /></Field><Field label="Ingredients"><Textarea value={form.ingredients} onChange={(event) => setForm({ ...form, ingredients: event.target.value })} /></Field><div className="space-y-2 md:col-span-2"><div className="flex items-center justify-between gap-3"><span className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Nutrition facts</span><Button variant="secondary" icon={<Plus className="h-4 w-4" />} onClick={addNutritionFact}>Add Fact</Button></div><div className="space-y-2">{form.nutritionFacts.length > 0 ? form.nutritionFacts.map((fact, index) => <div key={index} className="grid gap-2 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto]"><Input placeholder="Protein" value={fact.key} onChange={(event) => updateNutritionFact(index, 'key', event.target.value)} /><Input placeholder="25g" value={fact.value} onChange={(event) => updateNutritionFact(index, 'value', event.target.value)} /><Button variant="secondary" icon={<X className="h-4 w-4" />} onClick={() => removeNutritionFact(index)}>Delete</Button></div>) : <p className="text-xs text-gray-500">No nutrition facts added.</p>}</div></div><StringListEditor title="Warnings" placeholder="Contains milk and soy" inputValue={warningInput} items={form.warnings} emptyText="No warnings added." onInputChange={setWarningInput} onAdd={() => addStringItem('warnings', warningInput, () => setWarningInput(''))} onRemove={(item) => removeStringItem('warnings', item)} /><StringListEditor title="Usage instructions" placeholder="Mix one scoop with water" inputValue={usageInstructionInput} items={form.usageInstructions} emptyText="No usage instructions added." onInputChange={setUsageInstructionInput} onAdd={() => addStringItem('usageInstructions', usageInstructionInput, () => setUsageInstructionInput(''))} onRemove={(item) => removeStringItem('usageInstructions', item)} /></CardContent></Card>
         </div>
         <div className="space-y-6">
           <Card><CardHeader><CardTitle>Media</CardTitle></CardHeader><CardContent><Input type="file" accept="image/*" multiple onChange={(event) => setImages(Array.from(event.target.files ?? []).slice(0, 8))} /><p className="mt-2 text-[10px] text-gray-500">Up to 8 images, 5MB each.</p></CardContent></Card>
-          <Card><CardHeader><CardTitle>Pricing</CardTitle></CardHeader><CardContent className="space-y-4"><Field label="Price"><Input type="number" value={form.price} onChange={(event) => setForm({ ...form, price: event.target.value })} /></Field><Field label="Discount price"><Input type="number" value={form.discountPrice} onChange={(event) => setForm({ ...form, discountPrice: event.target.value })} /></Field></CardContent></Card>
-          <Card><CardHeader><CardTitle>Inventory</CardTitle></CardHeader><CardContent className="space-y-4"><Field label="Stock"><Input type="number" value={form.stock} onChange={(event) => setForm({ ...form, stock: event.target.value })} /></Field><Field label="SKU"><Input value={form.sku} onChange={(event) => setForm({ ...form, sku: event.target.value })} /></Field><Field label="Low stock threshold"><Input type="number" /></Field><Field label="Expiry date"><Input type="date" value={form.expiryDate} onChange={(event) => setForm({ ...form, expiryDate: event.target.value })} /></Field></CardContent></Card>
-          <Card><CardHeader><CardTitle>Visibility</CardTitle></CardHeader><CardContent className="space-y-3 text-xs text-gray-300"><label className="flex items-center gap-2"><input type="checkbox" checked={form.isActive} onChange={(event) => setForm({ ...form, isActive: event.target.checked })} className="accent-[#A3141C]" /> Active</label><label className="flex items-center gap-2"><input type="checkbox" checked={form.isFeatured} onChange={(event) => setForm({ ...form, isFeatured: event.target.checked })} className="accent-[#A3141C]" /> Featured</label></CardContent></Card>
+          <Card><CardHeader><CardTitle>Pricing</CardTitle></CardHeader><CardContent className="space-y-4"><Field label="Price"><Input inputMode="decimal" value={form.price} onChange={(event) => setForm({ ...form, price: event.target.value })} /></Field><Field label="Discount price"><Input inputMode="decimal" value={form.discountPrice} onChange={(event) => setForm({ ...form, discountPrice: event.target.value })} /></Field><div className="space-y-2"><div className="flex items-center justify-between gap-3"><span className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Original price history</span><Button variant="secondary" icon={<Plus className="h-4 w-4" />} onClick={addOriginalPrice}>Add</Button></div><div className="space-y-2">{form.originalPriceHistory.length > 0 ? form.originalPriceHistory.map((item, index) => <div key={index} className="grid gap-2 sm:grid-cols-[minmax(0,0.8fr)_minmax(0,1fr)_minmax(0,1fr)_auto]"><Input placeholder="Original price" inputMode="decimal" value={item.price} onChange={(event) => updateOriginalPrice(index, 'price', event.target.value)} /><Input placeholder="Note" value={item.note} onChange={(event) => updateOriginalPrice(index, 'note', event.target.value)} /><Input type="date" value={item.date} onChange={(event) => updateOriginalPrice(index, 'date', event.target.value)} /><Button variant="secondary" icon={<X className="h-4 w-4" />} onClick={() => removeOriginalPrice(index)}>Delete</Button></div>) : <p className="text-xs text-gray-500">No original price history added.</p>}</div></div></CardContent></Card>
+          <Card><CardHeader><CardTitle>Inventory</CardTitle></CardHeader><CardContent className="space-y-4"><Field label="Stock"><Input inputMode="numeric" value={form.stock} onChange={(event) => setForm({ ...form, stock: event.target.value })} /></Field><Field label="SKU"><Input value={form.sku} onChange={(event) => setForm({ ...form, sku: event.target.value })} /></Field><Field label="Low stock threshold"><Input inputMode="numeric" /></Field><Field label="Expiry date"><Input type="date" value={form.expiryDate} onChange={(event) => setForm({ ...form, expiryDate: event.target.value })} /></Field></CardContent></Card>
+          <Card><CardHeader><CardTitle>Visibility</CardTitle></CardHeader><CardContent className="space-y-3 text-xs text-gray-300"><label className="flex items-center gap-2"><input type="checkbox" checked={form.isActive} onChange={(event) => setForm({ ...form, isActive: event.target.checked })} className="accent-[#A3141C]" /> Active</label><label className="flex items-center gap-2"><input type="checkbox" checked={form.isFeatured} onChange={(event) => setForm({ ...form, isFeatured: event.target.checked })} className="accent-[#A3141C]" /> Featured</label><label className="flex items-center gap-2"><input type="checkbox" checked={form.isStack} onChange={(event) => setForm({ ...form, isStack: event.target.checked })} className="accent-[#A3141C]" /> Stack product</label></CardContent></Card>
         </div>
       </div>
       </form>
@@ -280,6 +306,37 @@ function buildNutritionFacts(rows: NutritionFactRow[]) {
     facts[key] = row.value.trim();
     return facts;
   }, {});
+}
+
+function normalizeOriginalPriceHistory(value: unknown): OriginalPriceHistoryRow[] {
+  if (!Array.isArray(value)) return [];
+
+  return value.map((item) => {
+    if (!isRecord(item)) return { price: '', note: 'update original price', date: '' };
+
+    const rawDate = item.date ?? item.createdAt ?? item.updatedAt;
+
+    return {
+      price: item.price === undefined || item.price === null ? '' : String(item.price),
+      note: typeof item.note === 'string' ? item.note : 'update original price',
+      date: typeof rawDate === 'string' ? rawDate.slice(0, 10) : '',
+    };
+  });
+}
+
+function buildOriginalPriceHistory(rows: OriginalPriceHistoryRow[]) {
+  const history = rows.flatMap((row) => {
+    const price = Number(row.price);
+    if (!Number.isFinite(price) || price <= 0) return [];
+
+    return [{
+      price,
+      note: row.note.trim() || undefined,
+      date: row.date || undefined,
+    }];
+  });
+
+  return history.length > 0 ? history : undefined;
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {

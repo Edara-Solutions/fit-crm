@@ -1,6 +1,6 @@
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
 
-type FormValue = string | number | boolean | null | undefined | File | File[] | string[] | number[] | Record<string, unknown>;
+type FormValue = string | number | boolean | null | undefined | File | File[] | string[] | number[] | Array<Record<string, unknown>> | Record<string, unknown>;
 
 export function validateImageFile(file: File) {
   if (!file.type.startsWith('image/')) {
@@ -26,7 +26,17 @@ export function buildFormData(payload: Record<string, FormValue>) {
         return;
       }
 
-      value.forEach((item) => formData.append(`${key}[]`, String(item)));
+      value.forEach((item, index) => {
+        if (typeof item === 'object' && item !== null) {
+          Object.entries(item).forEach(([nestedKey, nestedValue]) => {
+            if (nestedValue === undefined || nestedValue === null || nestedValue === '') return;
+            formData.append(`${key}[${index}][${nestedKey}]`, String(nestedValue));
+          });
+          return;
+        }
+
+        formData.append(`${key}[]`, String(item));
+      });
       return;
     }
 
