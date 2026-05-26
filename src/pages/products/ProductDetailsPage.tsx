@@ -31,6 +31,7 @@ export function ProductDetailsPage() {
   const brand = getNamedValue(product.brand);
   const category = getNamedValue(product.category);
   const status = product.status || (product.stock === 0 ? 'out_of_stock' : product.isActive === false ? 'inactive' : 'active');
+  const viewRows = getViewRows(product.views);
 
   return (
     <PageContainer>
@@ -110,6 +111,25 @@ export function ProductDetailsPage() {
           </Card>
 
           <Card>
+            <CardHeader><CardTitle>Views</CardTitle></CardHeader>
+            <CardContent className="space-y-3 text-xs">
+              <InfoRow label="Total Views" value={String(product.totalViews ?? 0)} strong />
+              <div className="border-t border-border-subtle pt-3">
+                <p className="mb-2 text-[10px] font-bold uppercase tracking-widest text-gray-500">Views By Email</p>
+                {viewRows.length > 0 ? (
+                  <div className="max-h-52 space-y-2 overflow-y-auto pr-1">
+                    {viewRows.map((item) => (
+                      <div key={item.email}>
+                        <InfoRow label={item.email} value={String(item.totalViews)} />
+                      </div>
+                    ))}
+                  </div>
+                ) : <p className="text-xs text-gray-500">No customer views recorded.</p>}
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
             <CardHeader><CardTitle>Inventory</CardTitle></CardHeader>
             <CardContent className="space-y-3 text-xs">
               <InfoRow label="Stock" value={String(product.stock ?? 0)} strong />
@@ -175,6 +195,14 @@ function formatNutrition(value: Product['nutritionFacts']) {
   if (!value || typeof value === 'string') return value;
 
   return Object.entries(value).map(([key, item]) => `${key}: ${String(item)}`).join('\n');
+}
+
+function getViewRows(value: Product['views']) {
+  if (!value) return [];
+
+  return Object.entries(value)
+    .map(([email, totalViews]) => ({ email, totalViews: Number(totalViews) || 0 }))
+    .sort((first, second) => second.totalViews - first.totalViews);
 }
 
 function formatValue(value: unknown) {

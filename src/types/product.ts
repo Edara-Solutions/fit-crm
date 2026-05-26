@@ -23,6 +23,8 @@ export type Product = {
   discountPrice?: number;
   revenue?: number;
   originalPriceHistory?: ProductOriginalPriceHistory[];
+  totalViews?: number;
+  views?: Record<string, number>;
   stock: number;
   sku: string;
   status?: ProductStatus;
